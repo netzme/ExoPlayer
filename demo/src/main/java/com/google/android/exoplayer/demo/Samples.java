@@ -148,6 +148,12 @@ import java.util.Locale;
     new Sample("Google Glass (WebM Video with Vorbis Audio)",
         "http://demos.webmproject.org/exoplayer/glass_vp9_vorbis.webm",
         DemoUtil.TYPE_WEBM),
+    new Sample("Cloudinary video sample",
+        "http://res.cloudinary.com/demo/video/upload/w_1280,h_720,c_fit/dog.webm",
+        DemoUtil.TYPE_WEBM),
+    new Sample("Netzme office",
+        "http://res.cloudinary.com/netzme/video/upload/w_1280,h_720,c_fit/v1432286662/VID_20150522_161050236_ye2ldv.webm",
+        DemoUtil.TYPE_WEBM)
   };
 
   private Samples() {}

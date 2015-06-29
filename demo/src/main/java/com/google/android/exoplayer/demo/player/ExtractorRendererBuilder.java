@@ -28,6 +28,8 @@ import com.google.android.exoplayer.upstream.DefaultUriDataSource;
 import android.content.Context;
 import android.media.MediaCodec;
 import android.net.Uri;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
@@ -74,6 +76,7 @@ public class ExtractorRendererBuilder implements RendererBuilder {
     renderers[DemoPlayer.TYPE_AUDIO] = audioRenderer;
     renderers[DemoPlayer.TYPE_DEBUG] = debugRenderer;
     callback.onRenderers(null, null, renderers);
+
   }
 
 }
