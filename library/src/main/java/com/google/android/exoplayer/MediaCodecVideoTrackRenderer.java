@@ -15,17 +15,17 @@
  */
 package com.google.android.exoplayer;
 
+import com.google.android.exoplayer.drm.DrmSessionManager;
+import com.google.android.exoplayer.util.MimeTypes;
+import com.google.android.exoplayer.util.TraceUtil;
+import com.google.android.exoplayer.util.Util;
+
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaCrypto;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.Surface;
-
-import com.google.android.exoplayer.drm.DrmSessionManager;
-import com.google.android.exoplayer.util.MimeTypes;
-import com.google.android.exoplayer.util.TraceUtil;
-import com.google.android.exoplayer.util.Util;
 
 import java.nio.ByteBuffer;
 
@@ -63,7 +63,7 @@ public class MediaCodecVideoTrackRenderer extends MediaCodecTrackRenderer {
      *     of square pixels this will be equal to 1.0. Different values are indicative of anamorphic
      *     content.
      */
-    void onVideoSizeChanged(int width, int height, float pixelWidthHeightRatio, int rotateDegrees);
+    void onVideoSizeChanged(int width, int height, float pixelWidthHeightRatio);
 
     /**
      * Invoked when a frame is rendered to a surface for the first time following that surface
@@ -135,8 +135,6 @@ public class MediaCodecVideoTrackRenderer extends MediaCodecTrackRenderer {
   private int lastReportedWidth;
   private int lastReportedHeight;
   private float lastReportedPixelWidthHeightRatio;
-  private int iVideoRotateDegree;
-  private boolean iVideoRotateDegreeByApp;
 
   /**
    * @param source The upstream source from which the renderer obtains samples.
@@ -253,8 +251,6 @@ public class MediaCodecVideoTrackRenderer extends MediaCodecTrackRenderer {
     lastReportedWidth = -1;
     lastReportedHeight = -1;
     lastReportedPixelWidthHeightRatio = -1;
-    iVideoRotateDegree = 0;
-    iVideoRotateDegreeByApp = false;
   }
 
   @Override
@@ -364,18 +360,6 @@ public class MediaCodecVideoTrackRenderer extends MediaCodecTrackRenderer {
   @Override
   protected void configureCodec(MediaCodec codec, String codecName,
       android.media.MediaFormat format, MediaCrypto crypto) {
-    if (format != null){
-      if (format.containsKey(MediaFormat.KEY_ROTATION_DEGREES)){
-        int degree = format.getInteger(MediaFormat.KEY_ROTATION_DEGREES);
-        iVideoRotateDegree = degree;
-        iVideoRotateDegreeByApp = false;
-      } else if (format.containsKey(MediaFormat.KEY_ROTATION_DEGREES_BY_APP)){
-        int degree = format.getInteger(MediaFormat.KEY_ROTATION_DEGREES_BY_APP);
-        iVideoRotateDegree = degree;
-        iVideoRotateDegreeByApp = true;
-      }
-    }
-
     codec.configure(format, surface, crypto, 0);
     codec.setVideoScalingMode(videoScalingMode);
   }
@@ -539,12 +523,7 @@ public class MediaCodecVideoTrackRenderer extends MediaCodecTrackRenderer {
     eventHandler.post(new Runnable()  {
       @Override
       public void run() {
-        if (iVideoRotateDegreeByApp)
-          eventListener.onVideoSizeChanged(currentWidth, currentHeight, currentPixelWidthHeightRatio, iVideoRotateDegree);
-        else if (iVideoRotateDegree == 90 || iVideoRotateDegree == 270)
-          eventListener.onVideoSizeChanged(currentHeight, currentWidth, 1.0f / currentPixelWidthHeightRatio, 0);
-        else
-          eventListener.onVideoSizeChanged(currentWidth, currentHeight, currentPixelWidthHeightRatio, 0);
+        eventListener.onVideoSizeChanged(currentWidth, currentHeight, currentPixelWidthHeightRatio);
       }
     });
     // Update the last reported values.

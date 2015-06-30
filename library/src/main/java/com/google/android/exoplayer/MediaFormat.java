@@ -15,11 +15,11 @@
  */
 package com.google.android.exoplayer;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-
 import com.google.android.exoplayer.util.MimeTypes;
 import com.google.android.exoplayer.util.Util;
+
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -34,10 +34,6 @@ public class MediaFormat {
 
   private static final String KEY_PIXEL_WIDTH_HEIGHT_RATIO =
       "com.google.android.videos.pixelWidthHeightRatio";
-
-  public static final String KEY_ROTATION_DEGREES = "rotation-degrees";
-
-  public static final String KEY_ROTATION_DEGREES_BY_APP = "rotation-degrees-by-app";
 
   public static final int NO_VALUE = -1;
 
@@ -54,7 +50,6 @@ public class MediaFormat {
   public final int sampleRate;
 
   public final List<byte[]> initializationData;
-  public int rotateDegree = 0;
 
   private int maxWidth;
   private int maxHeight;
@@ -254,13 +249,6 @@ public class MediaFormat {
       maybeSetIntegerV16(format, android.media.MediaFormat.KEY_CHANNEL_COUNT, channelCount);
       maybeSetIntegerV16(format, android.media.MediaFormat.KEY_SAMPLE_RATE, sampleRate);
       maybeSetFloatV16(format, KEY_PIXEL_WIDTH_HEIGHT_RATIO, pixelWidthHeightRatio);
-      // We can find the rotation-degrees from ACodec, but it's not an open setting.
-      // https://android.googlesource.com/platform/frameworks/av/+/android-5.0.1_r1/media/libstagefright/ACodec.cpp
-      if (Util.SDK_INT >= 21) {
-        maybeSetIntegerV16(format, KEY_ROTATION_DEGREES, rotateDegree);
-      } else {
-        maybeSetIntegerV16(format, KEY_ROTATION_DEGREES_BY_APP, rotateDegree);
-      }
       for (int i = 0; i < initializationData.size(); i++) {
         format.setByteBuffer("csd-" + i, ByteBuffer.wrap(initializationData.get(i)));
       }
